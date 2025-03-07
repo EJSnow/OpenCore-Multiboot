@@ -40,6 +40,13 @@ Ok, if you're quite experienced with how partitioning and booting multiple OSes 
     - Erase the partition where you want windows to be installed on to NTFS (as expected)
     - Follow the rest from this [guide over at TenForums](https://www.tenforums.com/tutorials/84331-apply-windows-image-using-dism-instead-clean-install.html#Part2)
       - You do NOT need MSR and Recovery, and you cannot create them when there are things already installed on the disk (blame windows installer)
-        - TODO: some way of creating a separate windows Recovery, I cannot find any guide on how to do that so that Windows would recognize it natively, if you know of a guide or know how to do it, open [a PR](https://github.com/dortania/OpenCore-Multiboot/) or [an issue](https://github.com/dortania/bugtracker) with your ideas. 
+        - You can actually still create a recovery partition though, if you really really need a separate Windows recovery.
+        - When formatting your drive for Windows, leave ~1GB of unallocated space after the C:\ partition. Then do this in diskpart (this assumes you are using UEFI boot):
+          - run `create partition primary id=de94bba4-06d1-4d40-a16a-bfd50179d6ac`
+          - then `gpt attributes =0x8000000000000001`
+          - then format it as NTFS
+          - proceed with Windows installation as described in the TenForums guide above.
+          - After Windows is installed, open an admin command prompt on your new install and run `reagentc /enable` which will set up Windows recovery automatically on the partition you made earlier.
+          - Then check that it worked properly by running `reagentc /info` which should show that Windows RE (Recovery Environment) is enabled.
 
 Now that you have all these information, good luck with the rest. However if you're not sure, follow then the long way that has more explanations and details on how to properly do it.
